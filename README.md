@@ -5,26 +5,9 @@ TaskFlow Pro is a production-ready, industry-grade Full Stack Task Management ap
 
 ---
 
-## 🛡️ Badges
-[![CI/CD Pipeline](https://github.com/maitray-agrawal/Task-TrackerAI/actions/workflows/ci.yml/badge.svg)](https://github.com/maitray-agrawal/Task-TrackerAI/actions/workflows/ci.yml)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-blue.svg)](https://nodejs.org)
-[![React Version](https://img.shields.io/badge/react-19.0.0-blue.svg)](https://react.dev)
-[![Docker Support](https://img.shields.io/badge/docker-enabled-blue.svg)](https://www.docker.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+## Project Overview
+TaskFlow Pro is designed to deliver a modern, high-performance task management experience. Using a robust MERN stack with modern ES Module imports, TanStack Query, and a customized CSS system, it bridges the gap between state-of-the-art interactive frontends and secure, performant, and resilient backends.
 
----
-
-## 📝 Overview
-TaskFlow Pro is built to deliver a modern, high-performance task management experience. Using a robust MERN stack with modern ES Module imports, TanStack Query, and a customized CSS system, it bridges the gap between state-of-the-art interactive frontends and secure, performant, and resilient backends.
-
-### 🌐 Live Demo & Deployment URLs
-* **Frontend Web Client**: `http://localhost` (when running via Docker Compose) or `http://localhost:5173` (development server)
-* **Backend API Server**: `http://localhost:5000`
-* **Interactive Swagger UI Docs**: `http://localhost:5000/api/docs`
-
----
-
-## 📐 Architecture Diagram
 ```text
                        +-----------------------------+
                        |   React 19 Frontend (Vite)  |
@@ -60,17 +43,24 @@ TaskFlow Pro is built to deliver a modern, high-performance task management expe
 
 ---
 
-## 🌟 Features
+## Live Demo
+* **Frontend Web Client**: [http://localhost](http://localhost) (when running via Docker Compose) or [http://localhost:5173](http://localhost:5173) (development server)
+* **Backend API Server**: [http://localhost:5000](http://localhost:5000)
+* **Interactive Swagger UI Docs**: [http://localhost:5000/api/docs](http://localhost:5000/api/docs)
 
-### ⚙️ Backend Features
+---
+
+## Features
+
+### Backend Features
 * **RESTful Controller Design**: Modular architectural handlers for CRUD, query aggregation, and status updates.
 * **Safe Regex Query Escaping**: Search param routing contains robust validation that escapes regex characters to prevent Regular Expression Denial of Service (ReDoS).
 * **Reliability Process Guards**: Unhandled promise rejections (`unhandledRejection`) and uncaught synchronous exceptions (`uncaughtException`) are caught globally to safely close server ports and connection pools before exiting.
 * **Auto-Generating API Docs**: Interactive OpenAPI 3.0 documentation served via Swagger UI at `/api/docs`.
 * **Centralized Error Boundary Middleware**: Standardized JSON envelopes for API errors mapping validation errors to clean fields.
 
-### 🖥️ Frontend Features
-* **Aesthetic Glassmorphic UI**: Backdrop blurs (`backdrop-blur-md`), dark/light mode themes, and smooth entrance layouts powered by Tailwind CSS & Framer Motion.
+### Frontend Features
+* **Aesthetic Glassmorphic UI**: Backdrop blurs (`backdrop-blur-md`), dark/light mode themes, and open layout entries powered by Tailwind CSS & Framer Motion.
 * **TanStack Query State Syncing**: Caches tasks list, manages garbage collection, and automates route/mutation state refresh.
 * **Optimistic UI Updates & Filter-Safe Rollbacks**: Tasks updated or deleted instantly update UI layouts. If API calls fail, the custom query rollback utilizes prefix queries (`getQueriesData`) to restore previous states safely without breaking local search filters.
 * **React 19 & Fast Refresh Friendly**: Style mapping variables and keyboard hook callbacks are cached utilizing React `useRef` to maintain compiler Fast Refresh stability and prevent memory leaks.
@@ -82,7 +72,7 @@ TaskFlow Pro is built to deliver a modern, high-performance task management expe
 * **SVG Analytics Dashboard Charts**: Recharts visualizations parsing completed task metrics, category breakdown, and priority queues.
 * **Live Local Client Activity Logger**: Pub/Sub logger keeping a timeline of local activities (created, updated, status changes, deleted) synchronizing state across layouts.
 
-### 🔒 Security Features
+### Security Features
 * **Secure Headers**: Restricts browser features and secures HTTP requests using `helmet`.
 * **Payload Sanitation**: Blocks NoSQL injection queries using `express-mongo-sanitize`.
 * **HTTP Parameter Pollution**: Prevents parameter pollution and query duplication using `hpp`.
@@ -92,7 +82,7 @@ TaskFlow Pro is built to deliver a modern, high-performance task management expe
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 * **Core**: React 19, Vite, React Router DOM v6
@@ -115,7 +105,7 @@ TaskFlow Pro is built to deliver a modern, high-performance task management expe
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 ```text
 TaskTrack/
 ├── .github/
@@ -184,7 +174,7 @@ TaskTrack/
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 ### Backend Environment Variables (`backend/.env`)
 Create a `.env` file in the `backend/` directory based on the `.env.example` template:
@@ -205,7 +195,7 @@ Configure local parameters in `frontend/.env`:
 
 ---
 
-## 🚀 Installation & Running Locally
+## Installation
 
 ### Prerequisites
 * Node.js (v20+)
@@ -231,7 +221,7 @@ npm run dev
 
 ---
 
-## 🐳 Docker Container Orchestration
+## Docker Setup
 Run the entire stack (React Nginx proxy, Express API backend, MongoDB datastore) via a single command:
 
 ```bash
@@ -248,7 +238,7 @@ The client dashboard will be available at [http://localhost](http://localhost). 
 
 ---
 
-## 📡 REST API Reference
+## API Documentation
 
 All successful responses return a standardized envelope structure:
 ```json
@@ -298,7 +288,23 @@ All successful responses return a standardized envelope structure:
 
 ---
 
-## 🧪 Testing Guidelines
+## CI/CD
+TaskFlow Pro has automated pipeline checks integrated using GitHub Actions in `.github/workflows/ci.yml`.
+The workflow runs automatically on every `push` and `pull_request` targeting the `main` or `master` branches:
+
+1. **Backend Integration Job**:
+   * Spins up a MongoDB v6.0 container instance service.
+   * Installs server packages.
+   * Runs the Jest backend unit & integration tests.
+2. **Frontend Build & Test Job**:
+   * Sets up a Node environment.
+   * Installs frontend packages (with legacy peer dependency resolution).
+   * Runs Vitest component & hooks tests.
+   * Builds the production production static files to ensure code compilation integrity.
+
+---
+
+## Testing
 Automated test suites ensure backend security and frontend state recovery integrity.
 
 ### 1. Run Backend Integration Tests (Jest & Supertest)
@@ -317,34 +323,7 @@ npm test
 
 ---
 
-## 🚀 Deployment Instructions
-
-### Frontend (Static Files & Nginx)
-* Build files using: `npm run build`.
-* Deploy the output `dist` folder to cloud static hosting engines (Vercel, Netlify, AWS S3, Cloudflare Pages).
-* Configure routing fallbacks to `index.html` (SPA routing) and map `/api/*` proxies to the backend URL.
-
-### Backend (Node.js & Express)
-* Provision a hosting environment (AWS Elastic Beanstalk, Render, Railway, DigitalOcean).
-* Set production environment variables: `NODE_ENV=production` and whitelist the domain in `FRONTEND_URL`.
-
-### MongoDB Atlas Cloud Configuration
-1. Create a free-tier cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Create database access credentials.
-3. Whitelist access IPs (allow connection access from backend server hosting CIDRs).
-4. Update `MONGODB_URI` environment variable with connection string.
-
----
-
-## 📈 Performance & Production Optimizations
-* **Gzip Compression**: Compresses data payloads on transit via `compression` middleware.
-* **Caching & Query Performance**: Optimized page queries using pagination limit parameters.
-* **Asset Code Splitting**: Utilizes `lazy` and `Suspense` chunk routing in the frontend SPA compilation to reduce bundle footprint.
-* **Dynamic Ref Rollbacks**: Prevent browser UI memory leak rendering cycles during optimistic rollbacks.
-
----
-
-## 🎬 Screenshots Placeholder
+## Screenshots
 *   **Dashboard view**:
     ```text
     [========================= Dashboard Metrics ========================]
@@ -362,40 +341,12 @@ npm test
 
 ---
 
-## 📋 Assignment Coverage Checklist
-* [x] **Full RESTful CRUD API**: Tasks can be created, updated, status toggled, retrieved, and deleted.
-* [x] **Advanced Pagination**: Page queries dynamically segment backend datasets.
-* [x] **Safe Query Searching**: Text queries match title and description with ReDoS regex protection.
-* [x] **Status & Priority Sorting**: Supports sorting by due date, created date, and alphabetically.
-* [x] **SVG Analytics Charts**: Shows interactive donut charts tracking categorical allocations.
-* [x] **Dark/Light Mode Theme Context**: Theme switcher with state preservation.
-* [x] **Safe Keyboard Shortcuts**: Native layout navigation using system keyboard keys.
-* [x] **Robust Error Boundaries**: Custom React component handling local runtime crashes.
-* [x] **Optimistic UI Updates**: Instant UI transitions with bulletproof cache invalidations.
-* [x] **Comprehensive Testing**: Test coverage validated via Jest/Vitest.
-
----
-
-## 🔮 Future Enhancements
+## Future Improvements
 * **JWT User Authentication**: Standard security scopes and private task routes.
 * **WebSocket Synchronization**: Live task boards synced across multiple concurrent users.
 * **Nested Checklists**: Support for subtasks with incremental progress tracking.
 
 ---
 
-## 🤝 Contributing
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature-branch`.
-3. Commit your changes: `git commit -m 'feat: Add feature description'`.
-4. Push to the branch: `git push origin feature-branch`.
-5. Open a Pull Request.
-
----
-
-## 📄 License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## ✍️ Author
+## Author Information
 * **Maitray Agrawal** - *Core Development & Architecture* - [GitHub Profile](https://github.com/maitray-agrawal)

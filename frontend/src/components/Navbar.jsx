@@ -63,7 +63,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
             JD
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-tight">Jane Doe</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-300 leading-tight">Maitray Agrawal</p>
             <p className="text-[10px] text-brand-500 dark:text-brand-400 font-semibold uppercase tracking-wider">Recruiter View</p>
           </div>
         </div>
