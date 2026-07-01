@@ -1,7 +1,27 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  let url = import.meta.env.VITE_API_URL;
+  if (!url) {
+    if (typeof window !== 'undefined') {
+      const { hostname } = window.location;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:5000/api';
+      }
+    }
+    return '/api';
+  }
+  url = url.trim();
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (!url.endsWith('/api') && !url.endsWith('/api/')) {
+      url = url.replace(/\/+$/, '') + '/api';
+    }
+  }
+  return url;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },

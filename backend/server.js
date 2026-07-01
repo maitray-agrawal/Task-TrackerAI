@@ -55,8 +55,30 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS Configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost',
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, postman, curl)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      origin.startsWith('http://localhost') || 
+                      /\.vercel\.app$/.test(origin);
+                      
+    if (isAllowed || process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
