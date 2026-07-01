@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useTasks, useCreateTask } from '../hooks/useTasks';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import StatsCard from '../components/ui/StatsCard';
 import StatsCharts from '../components/StatsCharts';
+import RecentActivity from '../components/RecentActivity';
 import { PageSkeleton } from '../components/ui/Loader';
 import TaskCard from '../components/TaskCard';
 import TaskModal from '../components/TaskModal';
@@ -21,6 +23,11 @@ import { Link } from 'react-router-dom';
 const Dashboard = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const { mutate: createTask, isPending: createLoading } = useCreateTask();
+
+  useKeyboardShortcuts({
+    n: { action: () => setIsCreateOpen(true) },
+    Escape: { action: () => setIsCreateOpen(false) },
+  });
 
   // Fetch all tasks for analytics computation
   const { data, isLoading, isError, error } = useTasks({ limit: 1000 });
@@ -143,9 +150,9 @@ const Dashboard = () => {
       <StatsCharts tasks={tasks} />
 
       {/* Dynamic Schedule Feeds */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Today's Tasks */}
-        <div className="glass-card p-6 rounded-2xl flex flex-col h-full">
+        <div className="glass-card p-6 rounded-2xl flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-5">
             <h3 className="font-bold text-base text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
               <CheckSquare className="w-5 h-5 text-brand-500" />
@@ -156,9 +163,9 @@ const Dashboard = () => {
             </span>
           </div>
 
-          <div className="flex-1 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col justify-between overflow-y-auto pr-1">
             {todayTasks.length === 0 ? (
-              <div className="py-12 flex flex-col items-center justify-center text-slate-400">
+              <div className="py-12 my-auto flex flex-col items-center justify-center text-slate-400">
                 <p className="text-sm">No tasks scheduled for today</p>
                 <Link to="/tasks" className="text-brand-500 hover:underline text-xs mt-2 font-medium">
                   View all tasks
@@ -172,7 +179,7 @@ const Dashboard = () => {
               </div>
             )}
             {todayTasks.length > 2 && (
-              <div className="text-center pt-4">
+              <div className="text-center pt-4 mt-auto">
                 <Link to="/tasks" className="text-brand-500 hover:underline text-xs font-bold">
                   View all {todayTasks.length} tasks
                 </Link>
@@ -182,7 +189,7 @@ const Dashboard = () => {
         </div>
 
         {/* Upcoming Deadlines */}
-        <div className="glass-card p-6 rounded-2xl flex flex-col h-full">
+        <div className="glass-card p-6 rounded-2xl flex flex-col h-[400px]">
           <div className="flex justify-between items-center mb-5">
             <h3 className="font-bold text-base text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-2">
               <Calendar className="w-5 h-5 text-violet-500" />
@@ -193,9 +200,9 @@ const Dashboard = () => {
             </span>
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto pr-1">
             {upcomingTasks.length === 0 ? (
-              <div className="py-12 flex flex-col items-center justify-center text-slate-400">
+              <div className="py-12 h-full flex flex-col items-center justify-center text-slate-400">
                 <p className="text-sm">No upcoming deadlines found</p>
               </div>
             ) : (
@@ -227,6 +234,11 @@ const Dashboard = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="h-[400px]">
+          <RecentActivity />
         </div>
       </div>
 

@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RootLayout from '../layouts/RootLayout';
-import Dashboard from '../pages/Dashboard';
-import AllTasks from '../pages/AllTasks';
-import TaskDetails from '../pages/TaskDetails';
-import NotFound from '../pages/NotFound';
+
+const Dashboard = lazy(() => import('../pages/Dashboard'));
+const AllTasks = lazy(() => import('../pages/AllTasks'));
+const TaskDetails = lazy(() => import('../pages/TaskDetails'));
+const NotFound = lazy(() => import('../pages/NotFound'));
 
 const AppRoutes = () => {
   return (

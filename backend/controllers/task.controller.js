@@ -11,9 +11,11 @@ export const getTasks = asyncHandler(async (req, res) => {
 
   // Search by title or description
   if (q) {
+    // Escape regex control characters to prevent ReDoS
+    const escapedQ = q.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
     match.$or = [
-      { title: { $regex: q, $options: 'i' } },
-      { description: { $regex: q, $options: 'i' } },
+      { title: { $regex: escapedQ, $options: 'i' } },
+      { description: { $regex: escapedQ, $options: 'i' } },
     ];
   }
 
@@ -77,14 +79,17 @@ export const getTasks = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    count: tasks.length,
-    pagination: {
-      totalTasks,
-      totalPages: Math.ceil(totalTasks / limitNum),
-      currentPage: pageNum,
-      limit: limitNum,
+    message: 'Tasks retrieved successfully',
+    data: {
+      count: tasks.length,
+      pagination: {
+        totalTasks,
+        totalPages: Math.ceil(totalTasks / limitNum),
+        currentPage: pageNum,
+        limit: limitNum,
+      },
+      tasks,
     },
-    tasks,
   });
 });
 
@@ -102,6 +107,7 @@ export const getTaskById = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Task retrieved successfully',
     data: task,
   });
 });
@@ -114,6 +120,7 @@ export const createTask = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
+    message: 'Task created successfully',
     data: task,
   });
 });
@@ -137,6 +144,7 @@ export const updateTask = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Task updated successfully',
     data: task,
   });
 });
@@ -158,6 +166,7 @@ export const updateTaskStatus = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Task status updated successfully',
     data: task,
   });
 });
@@ -178,6 +187,7 @@ export const deleteTask = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: 'Task deleted successfully',
     data: {},
   });
 });

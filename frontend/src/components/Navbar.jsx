@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Sun, Moon, Menu, X, CheckSquare, Bell } from 'lucide-react';
-import Button from './ui/Button';
 
 const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   const { theme, toggleTheme } = useTheme();
@@ -13,6 +12,8 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
         {/* Mobile Menu Trigger */}
         <button
           onClick={toggleSidebar}
+          aria-label="Toggle navigation menu"
+          aria-expanded={isSidebarOpen}
           className="lg:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 transition-colors"
         >
           {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -32,7 +33,10 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
       {/* Global Actions */}
       <div className="flex items-center gap-3">
         {/* Notifications Mock */}
-        <button className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 transition-all duration-200 relative hidden md:block">
+        <button
+          aria-label="Notifications"
+          className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-500 dark:text-slate-400 transition-all duration-200 relative hidden md:block"
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
         </button>
@@ -40,6 +44,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 text-slate-600 dark:text-slate-400 transition-all duration-200 active:scale-95"
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
         >

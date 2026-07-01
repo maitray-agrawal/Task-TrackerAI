@@ -3,27 +3,56 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import compression from 'compression';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
+import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 
 // Load config
 dotenv.config();
 
 // DB connection
 import connectDB from './config/db.js';
-connectDB();
-
-// Route files
+import swaggerSpec from './config/swagger.js';
 import taskRoutes from './routes/task.routes.js';
-
-// Error middleware
 import errorHandler from './middlewares/error.middleware.js';
+
+// Connect to Database
+connectDB();
 
 const app = express();
 
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '10kb' })); // security: limit payload size
 
 // Security Headers
 app.use(helmet());
+
+// Prevent NoSQL Injection
+app.use(mongoSanitize());
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
+
+// Compress all responses
+app.use(compression());
+
+// Rate Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 150, // limit each IP to 150 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes',
+    error: {
+      status: 429,
+    },
+  },
+});
+app.use('/api/', limiter);
 
 // CORS Configuration
 const corsOptions = {
@@ -38,6 +67,27 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   app.use(morgan('combined'));
 }
+
+// Health Check Endpoints
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Welcome to TaskFlow Pro API',
+    version: '1.0.0',
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: 'UP',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Swagger API Documentation Routing
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Mount routers
 app.use('/api/tasks', taskRoutes);
@@ -54,13 +104,33 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+let server;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+    console.log(`API Docs available at http://localhost:${PORT}/api/docs`);
+  });
+}
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error(`Uncaught Exception Error: ${err.message || err}`);
+  if (server) {
+    server.close(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
 });
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-  console.error(`Unhandled Rejection Error: ${err.message}`);
+process.on('unhandledRejection', (err) => {
+  console.error(`Unhandled Rejection Error: ${err.message || err}`);
   // Close server & exit process
-  server.close(() => process.exit(1));
+  if (server) {
+    server.close(() => process.exit(1));
+  } else {
+    process.exit(1);
+  }
 });
+
+export default app; // export app for testing

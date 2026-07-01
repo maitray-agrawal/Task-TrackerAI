@@ -11,12 +11,9 @@ import {
   Calendar,
   Clock,
   CheckCircle,
-  AlertTriangle,
-  Folder,
   Trash2,
   Edit,
   Activity,
-  CheckCircle2,
   Circle,
 } from 'lucide-react';
 

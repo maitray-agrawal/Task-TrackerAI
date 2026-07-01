@@ -3,8 +3,6 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ListTodo,
-  CheckCircle2,
-  AlertTriangle,
   FolderOpen,
 } from 'lucide-react';
 
@@ -30,7 +28,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     }`;
 
   const sidebarContent = (
-    <div className="flex flex-col h-full py-6 px-4">
+    <nav aria-label="Sidebar navigation" className="flex flex-col h-full py-6 px-4">
       {/* Navigation Menu */}
       <div className="space-y-1.5 flex-1">
         <p className="px-4 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
@@ -85,7 +83,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <span>TaskFlow Pro v1.0.0</span>
         </div>
       </div>
-    </div>
+    </nav>
   );
 
   return (

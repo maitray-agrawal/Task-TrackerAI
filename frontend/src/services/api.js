@@ -10,6 +10,10 @@ const api = axios.create({
 export const taskService = {
   getTasks: async (params) => {
     const { data } = await api.get('/tasks', { params });
+    // Backward compatibility check: return data.data if it contains the pagination/tasks structure
+    if (data && data.data && data.data.tasks !== undefined) {
+      return data.data;
+    }
     return data;
   },
 

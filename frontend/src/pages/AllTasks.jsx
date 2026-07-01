@@ -15,6 +15,7 @@ import Button from '../components/ui/Button';
 import { CardSkeleton } from '../components/ui/Loader';
 import { Plus, SlidersHorizontal, ArrowUpDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 
 const AllTasks = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,6 +62,24 @@ const AllTasks = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  useKeyboardShortcuts({
+    n: { action: () => setIsCreateOpen(true) },
+    f: { action: () => setShowFilters((prev) => !prev) },
+    '/': {
+      action: () => {
+        const input = document.getElementById('task-search-input');
+        if (input) input.focus();
+      },
+    },
+    Escape: {
+      action: () => {
+        setIsCreateOpen(false);
+        setEditingTask(null);
+        setDeletingId(null);
+      },
+    },
+  });
 
   const tasks = data?.tasks || [];
   const pagination = data?.pagination || { totalTasks: 0, totalPages: 1, currentPage: 1 };
@@ -178,11 +197,35 @@ const AllTasks = () => {
           <p className="text-red-500 font-semibold">{error?.message || 'Server error'}</p>
         </div>
       ) : tasks.length === 0 ? (
-        <div className="glass-card py-20 rounded-3xl text-center max-w-xl mx-auto space-y-4">
-          <p className="text-slate-400 text-base font-medium">No tasks found matching your criteria</p>
-          <Button variant="secondary" onClick={handleResetFilters} size="sm">
-            Clear Filters
-          </Button>
+        <div className="glass-card py-20 px-6 rounded-3xl text-center max-w-xl mx-auto flex flex-col items-center justify-center space-y-6">
+          <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-400 dark:text-slate-500 shadow-inner relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-brand-500/10 to-transparent opacity-50" />
+            { (status || priority || category || q) ? (
+              <SlidersHorizontal className="w-10 h-10 relative z-10 text-brand-500 animate-pulse" />
+            ) : (
+              <Plus className="w-10 h-10 relative z-10 text-slate-450 dark:text-slate-500" />
+            )}
+          </div>
+          <div className="space-y-2 max-w-md">
+            <h3 className="text-xl font-bold text-slate-850 dark:text-slate-200">
+              { (status || priority || category || q) ? 'No matching tasks found' : 'Start organizing your tasks' }
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              { (status || priority || category || q) 
+                ? 'Your active filters are excluding all tasks. Try resetting your search filters or add a new task to match.'
+                : 'No tasks have been added to this workflow yet. Create your first task to get started.' }
+            </p>
+          </div>
+          <div className="flex gap-4">
+            { (status || priority || category || q) && (
+              <Button variant="secondary" onClick={handleResetFilters} size="sm">
+                Clear Filters
+              </Button>
+            )}
+            <Button onClick={() => setIsCreateOpen(true)} size="sm" icon={Plus}>
+              Add Task
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-8">

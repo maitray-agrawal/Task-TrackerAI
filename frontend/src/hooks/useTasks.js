@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskService } from '../services/api';
 import toast from 'react-hot-toast';
+import { logActivity } from '../utils/activityLogger';
 
 // Hook to fetch tasks
 export const useTasks = (filters) => {
@@ -27,12 +28,15 @@ export const useCreateTask = () => {
 
   return useMutation({
     mutationFn: taskService.createTask,
-    onSuccess: () => {
+    onSuccess: (createdTask) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      if (createdTask && createdTask.title) {
+        logActivity('create', createdTask.title);
+      }
       toast.success('Task created successfully!');
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.error || error.response?.data?.errors?.[0]?.message || 'Failed to create task';
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.error?.details?.[0]?.message || error.response?.data?.message || 'Failed to create task';
       toast.error(errorMessage);
     },
   });
@@ -47,10 +51,13 @@ export const useUpdateTask = () => {
     onSuccess: (updatedTask) => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['task', updatedTask._id] });
+      if (updatedTask && updatedTask.title) {
+        logActivity('update', updatedTask.title);
+      }
       toast.success('Task updated successfully!');
     },
     onError: (error) => {
-      const errorMessage = error.response?.data?.error || error.response?.data?.errors?.[0]?.message || 'Failed to update task';
+      const errorMessage = error.response?.data?.error?.message || error.response?.data?.error?.details?.[0]?.message || error.response?.data?.message || 'Failed to update task';
       toast.error(errorMessage);
     },
   });
@@ -66,12 +73,12 @@ export const useUpdateTaskStatus = () => {
       // Cancel outgoing refetches so they don't overwrite our optimistic update
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
-      // Snapshot the previous value
-      const previousTasks = queryClient.getQueryData(['tasks']);
+      // Snapshot the previous value across all tasks queries (matching prefix)
+      const previousQueries = queryClient.getQueriesData({ queryKey: ['tasks'] });
 
       // Optimistically update the list queries
       queryClient.setQueriesData({ queryKey: ['tasks'] }, (old) => {
-        if (!old) return old;
+        if (!old || !old.tasks) return old;
         return {
           ...old,
           tasks: old.tasks.map((task) =>
@@ -80,16 +87,21 @@ export const useUpdateTaskStatus = () => {
         };
       });
 
-      return { previousTasks };
+      return { previousQueries };
     },
     onError: (err, variables, context) => {
       // Rollback to previous state
-      if (context?.previousTasks) {
-        queryClient.setQueriesData({ queryKey: ['tasks'] }, context.previousTasks);
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([queryKey, value]) => {
+          queryClient.setQueryData(queryKey, value);
+        });
       }
       toast.error('Failed to update task status');
     },
-    onSuccess: () => {
+    onSuccess: (updatedTask) => {
+      if (updatedTask && updatedTask.title) {
+        logActivity('status', `${updatedTask.title} (${updatedTask.status})`);
+      }
       toast.success('Task status updated!');
     },
     onSettled: () => {
@@ -108,11 +120,22 @@ export const useDeleteTask = () => {
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] });
 
-      const previousTasks = queryClient.getQueryData(['tasks']);
+      const previousQueries = queryClient.getQueriesData({ queryKey: ['tasks'] });
+
+      let deletedTaskTitle = 'Task';
+      for (const [, value] of previousQueries) {
+        if (value && value.tasks) {
+          const found = value.tasks.find((t) => t._id === id);
+          if (found) {
+            deletedTaskTitle = found.title;
+            break;
+          }
+        }
+      }
 
       // Optimistically remove the task
       queryClient.setQueriesData({ queryKey: ['tasks'] }, (old) => {
-        if (!old) return old;
+        if (!old || !old.tasks) return old;
         return {
           ...old,
           tasks: old.tasks.filter((task) => task._id !== id),
@@ -123,15 +146,20 @@ export const useDeleteTask = () => {
         };
       });
 
-      return { previousTasks };
+      return { previousQueries, deletedTaskTitle };
     },
     onError: (err, variables, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueriesData({ queryKey: ['tasks'] }, context.previousTasks);
+      if (context?.previousQueries) {
+        context.previousQueries.forEach(([queryKey, value]) => {
+          queryClient.setQueryData(queryKey, value);
+        });
       }
       toast.error('Failed to delete task');
     },
-    onSuccess: () => {
+    onSuccess: (data, id, context) => {
+      if (context?.deletedTaskTitle) {
+        logActivity('delete', context.deletedTaskTitle);
+      }
       toast.success('Task deleted successfully!');
     },
     onSettled: () => {

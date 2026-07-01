@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
+import { Spinner } from '../components/ui/Loader';
 
 const RootLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -27,7 +28,13 @@ const RootLayout = () => {
         {/* Content Outlet */}
         <main className="flex-1 lg:pl-64 min-h-[calc(100vh-73px)] flex flex-col relative z-10">
           <div className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
-            <Outlet />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[50vh]">
+                <Spinner size="lg" />
+              </div>
+            }>
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>
