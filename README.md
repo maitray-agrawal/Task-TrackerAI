@@ -324,20 +324,32 @@ npm test
 ---
 
 ## Screenshots
-*   **Dashboard view**:
-    ```text
-    [========================= Dashboard Metrics ========================]
-    [ Pending: 4 (40%) ][ Completed: 6 (60%) ][ Total Items: 10 ]
-    [ Analytics Charts (Recharts Donut) - Activity Log Timeline Panel    ]
-    [====================================================================]
-    ```
-*   **All Tasks Grid**:
-    ```text
-    [=========================== Tasks Grid =============================]
-    [ Search Input | Status Filter (All/Pending/Completed) | Priority    ]
-    [ Task Card A (Low) | Task Card B (Medium) | Task Card C (High)      ]
-    [====================================================================]
-    ```
+
+### 1. Interactive Analytics Dashboard Overview
+The main dashboard displays high-level task metrics (Total, Completed, Pending, Overdue, and Completion Rate) alongside real-time Recharts visualizations (Task Status donut chart, Task Priority bar chart, Task Category pie chart), a Today's Schedule tracker, and a live client-side event timeline.
+
+![TaskFlow Pro Populated Dashboard](screenshots/dashboard_populated.png)
+
+---
+
+### 2. Task Grid View
+The "All Tasks" view showcases responsive card layouts with dynamic sorting (Newest, Oldest, Priority, Title) and real-text search indexing capabilities.
+
+![TaskFlow Pro All Tasks Grid](screenshots/tasks_grid.png)
+
+---
+
+### 3. Task Creation & Editing Interface
+An overlay validation dialog powered by React Hook Form + Zod ensures consistent metadata inputs before sending payloads to the MongoDB backend.
+
+![TaskFlow Pro Task Modal](screenshots/add_task_modal.png)
+
+---
+
+### 4. Empty Dashboard Metrics State
+A clean glassmorphic initial UI layout that guides users through initial task setups.
+
+![TaskFlow Pro Empty Dashboard](screenshots/dashboard_empty.png)
 
 ---
 
